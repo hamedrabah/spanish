@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende Las Partes del Cuerpo</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .body-part {
+            cursor: pointer;
+            transition: all 0.3s;
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 1.5;
+            transform-origin: center;
+        }
+        .body-part:hover {
+            stroke: rgba(255, 215, 0, 0.7);
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+        }
+        .label {
+            font-size: 12px;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .body-part:hover + .label {
+            opacity: 1;
+        }
+        svg {
+            background: #222;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+        }
+        h1 {
+            color: #ffffff;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 25px;
+        }
+        .speech-bubble {
+            position: absolute;
+            background-color: #fff;
+            color: #333;
+            padding: 15px;
+            border-radius: 20px;
+            max-width: 220px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-size: 16px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease-out;
+            z-index: 100;
+            pointer-events: all;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .star-button {
+            margin-top: 10px;
+            background-color: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            color: #ccc;
+        }
+        
+        .star-button:hover {
+            transform: scale(1.2);
+        }
+        
+        .star-button.starred {
+            color: gold;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+        }
+        
+        .speech-bubble:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 15px solid #fff;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .speech-bubble.right:after {
+            left: auto;
+            right: -15px;
+            border-right: none;
+            border-left: 15px solid #fff;
+        }
+        .speech-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .svg-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        /* Initial welcome message */
+        #welcome-message {
+            position: absolute;
+            top: 150px;
+            left: 150px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 15px;
+            border-radius: 20px;
+            max-width: 250px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            z-index: 100;
+            animation: pulse 2s infinite;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        #welcome-message:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 15px solid rgba(255, 255, 255, 0.9);
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Animations for different body parts */
+        @keyframes headNod {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(-3deg) translateY(2px); }
+            40% { transform: rotate(0deg) translateY(-1px); }
+            60% { transform: rotate(3deg) translateY(2px); }
+            80% { transform: rotate(0deg) translateY(-1px); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes chestExpand {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.05) translateY(-2px); }
+            50% { transform: scale(1.08) translateY(-3px); }
+            75% { transform: scale(1.05) translateY(-2px); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes mouthTalk {
+            0% { opacity: 1; }
+            40% { opacity: 0; }
+            50% { opacity: 0; }
+            90% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes eyesBlink {
+            0% { transform: scaleY(1); }
+            10% { transform: scaleY(0.1); }
+            20% { transform: scaleY(1); }
+            100% { transform: scaleY(1); }
+        }
+        
+        @keyframes hairWave {
+            0% { transform: skewX(0deg) translateX(0); }
+            25% { transform: skewX(-2deg) translateX(-2px); }
+            50% { transform: skewX(0deg) translateX(0); }
+            75% { transform: skewX(2deg) translateX(2px); }
+            100% { transform: skewX(0deg) translateX(0); }
+        }
+        
+        @keyframes armWave {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes handWave {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(-25deg); }
+            75% { transform: rotate(-15deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes legKick {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(3deg); }
+            40% { transform: rotate(8deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes torsoSway {
+            0% { transform: rotate(0deg) translateX(0); }
+            25% { transform: rotate(-1deg) translateX(-2px); }
+            50% { transform: rotate(0deg) translateX(0); }
+            75% { transform: rotate(1deg) translateX(2px); }
+            100% { transform: rotate(0deg) translateX(0); }
+        }
+        
+        @keyframes earWiggle {
+            0% { transform: rotate(0deg) scaleY(1); }
+            30% { transform: rotate(-5deg) scaleY(1.05); }
+            60% { transform: rotate(5deg) scaleY(1.05); }
+            100% { transform: rotate(0deg) scaleY(1); }
+        }
+        
+        @keyframes noseWrinkle {
+            0% { transform: scaleY(1) translateY(0); }
+            50% { transform: scaleY(0.85) translateY(-2px); }
+            100% { transform: scaleY(1) translateY(0); }
+        }
+        
+        @keyframes shoulderShrug {
+            0% { transform: translateY(0); }
+            25% { transform: translateY(-2px); }
+            50% { transform: translateY(-5px); }
+            75% { transform: translateY(-2px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes kneeJiggle {
+            0% { transform: translateY(0) scaleY(1); }
+            30% { transform: translateY(-2px) scaleY(1.05); }
+            60% { transform: translateY(2px) scaleY(0.95); }
+            100% { transform: translateY(0) scaleY(1); }
+        }
+        
+        @keyframes footTap {
+            0% { transform: rotate(0deg) translateY(0); }
+            20% { transform: rotate(-5deg) translateY(-1px); }
+            40% { transform: rotate(-10deg) translateY(-2px); }
+            60% { transform: rotate(-15deg) translateY(-3px); }
+            80% { transform: rotate(-10deg) translateY(-1px); }
+            100% { transform: rotate(0deg) translateY(0); }
+        }
+        
+        @keyframes neckStretch {
+            0% { transform: scaleY(1); }
+            25% { transform: scaleY(1.05) translateY(-1px); }
+            50% { transform: scaleY(1.1) translateY(-2px); }
+            75% { transform: scaleY(1.05) translateY(-1px); }
+            100% { transform: scaleY(1); }
+        }
+        
+        @keyframes mouthSmile {
+            0% { transform: scaleY(1) scaleX(1); }
+            40% { transform: scaleY(0.8) scaleX(1.2); }
+            70% { transform: scaleY(0.7) scaleX(1.3); }
+            100% { transform: scaleY(1) scaleX(1); }
+        }
+        
+        .animate-part {
+            animation-duration: 0.8s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards !important;
+        }
+        
+        .mouth-talking {
+            animation: mouthTalk 0.5s ease-in-out infinite;
+            transform-origin: center center;
+        }
+        
+        /* Mouth open state when talking */
+        .mouth-open {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+        
+        .mouth-talking .mouth-open {
+            opacity: 1;
+        }
+        
+        .mouth-talking path:not(.mouth-open path) {
+            opacity: 0;
+        }
+        
+        /* Add explicit style for the chest to ensure it's visible on hover */
+        #pecho:hover + text, #pecho:hover ~ #pecho-label {
+            opacity: 1;
+            fill: yellow;
+            font-weight: bold;
+        }
+        
+        /* Remove HTML button styles for chest */
+        #chest-button {
+            display: none;
+        }
+        
+        /* Highlight body parts in different colors */
+        .body-part {
+            transition: all 0.5s ease;
+        }
+        
+        .body-part:hover {
+            filter: brightness(1.2) drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+        }
+        
+        /* Color coding for body parts */
+        #head:hover { fill: rgba(255, 165, 0, 0.8); }  /* Orange */
+        #hair:hover { fill: rgba(139, 69, 19, 0.8); }  /* Brown */
+        #neck:hover { fill: rgba(255, 255, 0, 0.8); }  /* Yellow */
+        #eyes:hover { fill: rgba(0, 0, 255, 0.8); }    /* Blue */
+        #nose:hover { fill: rgba(255, 0, 255, 0.8); }  /* Magenta */
+        #mouth:hover { fill: rgba(255, 0, 0, 0.8); }   /* Red */
+        #ears:hover { fill: rgba(0, 255, 255, 0.8); }  /* Cyan */
+        #shoulders:hover { fill: rgba(50, 205, 50, 0.8); } /* Lime Green */
+        #estomago:hover { fill: rgba(138, 43, 226, 0.8); }   /* Purple */
+        #pecho:hover { fill: rgba(220, 20, 60, 0.8); } /* Crimson */
+        #espalda:hover { fill: rgba(0, 191, 255, 0.8); } /* Deep Sky Blue */
+        #left-arm:hover, #right-arm:hover { fill: rgba(0, 128, 0, 0.8); } /* Green */
+        #left-hand:hover, #right-hand:hover { fill: rgba(255, 192, 203, 0.8); } /* Pink */
+        #left-leg:hover, #right-leg:hover { fill: rgba(70, 130, 180, 0.8); } /* Steel Blue */
+        #left-knee:hover, #right-knee:hover { fill: rgba(210, 105, 30, 0.8); } /* Chocolate */
+        #left-foot:hover, #right-foot:hover { fill: rgba(255, 140, 0, 0.8); } /* Dark Orange */
+        
+        /* Add styles for rotation button and rotation effect */
+        .rotation-button, .game-mode-button {
+            position: absolute;
+            bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .rotation-button {
+            left: 20%;
+            transform: translateX(-50%);
+        }
+        
+        .game-mode-button {
+            right: 20%;
+            transform: translateX(50%);
+        }
+        
+        .rotation-button:hover, .game-mode-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Word library styles */
+        .word-library {
+            position: fixed;  /* Changed from absolute to fixed */
+            right: 20px;
+            top: 120px;  /* Moved down to avoid overlap with action buttons */
+            width: 180px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            display: none; /* Hidden by default */
+            z-index: 100;
+            max-height: 60vh; /* Limit height and add scrolling */
+            overflow-y: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .word-library.show {
+            display: flex;
+            flex-direction: column;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .word-item {
+            background-color: #fff;
+            color: #333;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .word-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+        
+        .word-item.correct {
+            background-color: rgba(0, 200, 0, 0.7);
+            color: white;
+            pointer-events: none;
+        }
+        
+        /* Drop target highlight */
+        .body-part.drop-target {
+            stroke: rgba(255, 255, 100, 0.9);
+            stroke-width: 3;
+            filter: brightness(1.2);
+        }
+        
+        /* Positioned word label on body */
+        .placed-word {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 90;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .placed-word.visible {
+            opacity: 1;
+        }
+        
+        .placed-word.correct {
+            background-color: rgba(0, 200, 0, 0.7);
+            color: white;
+        }
+        
+        /* Game instructions */
+        .game-instructions {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 80%;
+            font-size: 16px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .game-instructions.show {
+            display: block;
+        }
+        
+        .character-container {
+            position: relative;
+            transition: transform 0.8s ease-in-out;
+            transform-style: preserve-3d;
+            perspective: 1200px;
+            width: 500px;
+            height: 700px;
+        }
+        
+        .character-front, .character-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .character-back {
+            transform: rotateY(180deg);
+        }
+        
+        .rotated {
+            transform: rotateY(180deg);
+        }
+        
+        /* Fix for text labels in back view */
+        .viewing-back text.label,
+        .viewing-back .back-only text.label {
+            transform: rotateY(180deg);
+            transform-box: fill-box;
+        }
+        
+        /* Fix for speech bubble in back view */
+        .viewing-back .speech-bubble {
+            transform: rotateY(180deg) scale(1);
+        }
+        
+        .viewing-back .speech-bubble.show {
+            transform: rotateY(180deg) scale(1);
+        }
+        
+        /* Reverse arrow direction in back view */
+        .viewing-back .speech-bubble:after {
+            transform: rotateY(180deg) translateY(-50%);
+        }
+        
+        .viewing-back .speech-bubble.right:after {
+            transform: rotateY(180deg) translateY(-50%);
+        }
+        
+        /* Hide back elements when viewing front */
+        .viewing-front .back-only {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Hide front elements when viewing back */
+        .viewing-back .front-only {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Style for the back-view indicator */
+        .view-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 101;
+        }
+        
+        .viewing-back .view-indicator {
+            opacity: 1;
+        }
+        
+        /* Add front-only class to elements only visible from front */
+        .front-only {
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Add more realistic back styles */
+        .character-container {
+            position: relative;
+            transition: transform 0.8s ease-in-out;
+            transform-style: preserve-3d;
+            perspective: 1200px;
+        }
+        
+        /* Add additional back elements */
+        #back-head {
+            fill: #4a2700;
+        }
+        
+        #nuca {
+            fill: #d5ad89;
+        }
+        
+        /* Add styles for music permission button */
+        #audio-permission-button {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+        
+        #audio-permission-button:hover {
+            background-color: #ff8800;
+        }
+        
+        .audio-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .audio-notification.show {
+            opacity: 1;
+        }
+        
+        /* Add styles for music button */
+        
+        /* Action buttons improved layout */
+        .action-buttons {
+            position: fixed;  /* Changed from absolute to fixed */
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 101;  /* Ensure buttons are always on top */
+            width: 120px;
+        }
+        
+        .action-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        #rotate-button {
+            background-color: #3498db;
+        }
+        
+        #rotate-button:hover {
+            background-color: #2980b9;
+        }
+        
+        #game-mode-button {
+            background-color: #e74c3c;
+        }
+        
+        #game-mode-button:hover {
+            background-color: #c0392b;
+        }
+        
+        #music-button {
+            background-color: #9b59b6;
+        }
+        
+        #music-button:hover {
+            background-color: #8e44ad;
+        }
+        
+        /* View indicator */
+        
+        /* Improved game mode styles */
+        .game-mode {
+            position: relative; 
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Word bank styling for game mode - make it more visible and ensure it's shown properly */
+        .word-library {
+            position: fixed;
+            right: 20px;  /* Changed from left: 20px to right: 20px to match screenshot */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 220px;
+            background-color: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            display: none; /* Hidden by default */
+            z-index: 1000; /* Ensure it's above other elements */
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Always show word library in game mode without relying on classes */
+        body.game-mode-active .word-library {
+            display: flex !important;
+            flex-direction: column;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Make word items more visible and with better style */
+        .word-item {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 10px 15px;
+            margin: 6px 0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .word-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.05);
+            background-color: rgba(255, 215, 0, 0.8);
+        }
+        
+        /* Improved notification styles */
+        .audio-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 101;
+        }
+
+        /* Bottom navigation buttons for rotation and game mode */
+        #rotate-button, #game-mode-button {
+            position: fixed;
+            bottom: 20px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            z-index: 200;
+        }
+
+        #rotate-button {
+            left: 30%;
+            transform: translateX(-50%);
+            background-color: #3498db;
+        }
+
+        #rotate-button:hover {
+            background-color: #2980b9;
+            transform: translateX(-50%) translateY(-3px);
+        }
+
+        #game-mode-button {
+            right: 30%;
+            transform: translateX(50%);
+            background-color: #e74c3c;
+        }
+
+        #game-mode-button:hover {
+            background-color: #c0392b;
+            transform: translateX(50%) translateY(-3px);
+        }
+
+        /* Remove these buttons from the action-buttons container */
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 101;
+        }
+
+        /* Music button stays in the top-right */
+        #music-button {
+            background-color: #9b59b6;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        #music-button:hover {
+            background-color: #8e44ad;
+        }
+
+        /* Add title to word library */
+        .word-library::before {
+            content: "Palabras";
+            display: block;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Debug helper for word bank display */
+        .word-library.show {
+            display: flex !important;
+            flex-direction: column;
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 9999 !important; /* Very high z-index to ensure it's on top */
+            opacity: 1 !important;
+            visibility: visible !important;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5) !important; /* Gold shadow for visibility */
+        }
+    </style>
+    <script>
+        // Initialize global variables and functions before DOM loads
+        window.isGameMode = false;
+        window.correctlyPlacedWords = new Set();
+        window.bodyParts = {
+            hair: 'pelo',
+            head: 'cabeza',
+            neck: 'cuello',
+            eyes: 'ojos',
+            nose: 'nariz',
+            mouth: 'boca',
+            ears: 'orejas',
+            shoulders: 'hombros',
+            pecho: 'pecho',
+            espalda: 'espalda',
+            estomago: 'estómago',
+            'left-arm': 'brazo izquierdo',
+            'right-arm': 'brazo derecho',
+            'left-hand': 'mano izquierda',
+            'right-hand': 'mano derecha',
+            'left-leg': 'pierna izquierda',
+            'right-leg': 'pierna derecha',
+            'left-knee': 'rodilla izquierda',
+            'right-knee': 'rodilla derecha',
+            'left-foot': 'pie izquierdo',
+            'right-foot': 'pie derecho',
+            'back-head': 'cabeza posterior',
+            nuca: 'nuca',
+            'back-left-arm': 'brazo posterior',
+            'back-right-arm': 'brazo posterior'
+        };
+        
+        // Pre-define critical functions
+        window.enableGameMode = function() {
+            console.log("Game mode enabled");
+            // Implementation will be in the main script
+        };
+        
+        window.exitGameMode = function() {
+            console.log("Game mode disabled");
+            // Implementation will be in the main script
+        };
+        
+        window.speak = function(text) {
+            console.log("Speaking:", text);
+            // Implementation will be in the main script
+        };
+        
+        // Fix for speech synthesis
+        window.initSpeech = function() {
+            if (!('speechSynthesis' in window)) {
+                console.warn("Speech synthesis not available");
+                return;
+            }
+            
+            // Force loading voices
+            window.speechSynthesis.getVoices();
+            
+            // Initialize with a silent utterance
+            const silentUtterance = new SpeechSynthesisUtterance('');
+            silentUtterance.volume = 0;
+            silentUtterance.rate = 1;
+            window.speechSynthesis.speak(silentUtterance);
+            
+            console.log("Speech synthesis initialized");
+        };
+        
+        // Call speech initialization immediately
+        window.addEventListener('DOMContentLoaded', function() {
+            window.initSpeech();
+        });
+    </script>
+</head>
+<body>
+    <h1>Aprende Las Partes del Cuerpo</h1>
+    <div class="svg-container">
+        <div class="action-buttons">
+            <button id="music-button">🎵 Mariachi</button>
+        </div>
+        <button id="rotate-button">Frente</button>
+        <button id="game-mode-button">Modo Juego</button>
+        
+        <!-- Word library (for game mode) -->
+        <div id="word-library" class="word-library">
+            <!-- Words will be added here dynamically -->
+        </div>
+        
+        <!-- Character container for rotation -->
+        <div id="character-container" class="character-container viewing-front">
+            <svg width="500" height="700" viewBox="0 0 500 700">
+                <!-- Define gradients for realistic skin tones -->
+                <defs>
+                    <radialGradient id="headGradient" cx="50%" cy="40%" r="60%" fx="50%" fy="40%">
+                        <stop offset="0%" style="stop-color:#f0d0a8"/>
+                        <stop offset="70%" style="stop-color:#deb887"/>
+                        <stop offset="100%" style="stop-color:#c99c76"/>
+                    </radialGradient>
+                    
+                    <radialGradient id="torsoGradient" cx="50%" cy="30%" r="70%" fx="40%" fy="30%">
+                        <stop offset="0%" style="stop-color:#e8c499"/>
+                        <stop offset="60%" style="stop-color:#d5ad89"/>
+                        <stop offset="100%" style="stop-color:#c0966e"/>
+                    </radialGradient>
+                    
+                    <linearGradient id="leftArmGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#c0966e"/>
+                        <stop offset="50%" style="stop-color:#d5ad89"/>
+                        <stop offset="100%" style="stop-color:#c0966e"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="rightArmGradient" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#c0966e"/>
+                        <stop offset="50%" style="stop-color:#d5ad89"/>
+                        <stop offset="100%" style="stop-color:#c0966e"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="leftLegGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#c0966e"/>
+                        <stop offset="50%" style="stop-color:#d5ad89"/>
+                        <stop offset="100%" style="stop-color:#c0966e"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="rightLegGradient" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#c0966e"/>
+                        <stop offset="50%" style="stop-color:#d5ad89"/>
+                        <stop offset="100%" style="stop-color:#c0966e"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(0,0,0,0.4)"/>
+                        <stop offset="100%" style="stop-color:rgba(0,0,0,0)"/>
+                    </linearGradient>
+                    
+                    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+                        <feOffset in="blur" dx="2" dy="2" result="offsetBlur"/>
+                        <feComponentTransfer in="offsetBlur" result="softBlur">
+                            <feFuncA type="linear" slope="0.5"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode in="softBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Head with realistic features -->
+                <path class="body-part" id="head" d="
+                    M250 80
+                    C 290 80, 320 110, 320 160
+                    C 320 200, 300 240, 250 240
+                    C 200 240, 180 200, 180 160
+                    C 180 110, 210 80, 250 80"
+                    fill="url(#headGradient)" filter="url(#softShadow)"/>
+                <text x="250" y="160" class="label">cabeza</text>
+
+                <!-- Hair - add as a new body part -->
+                <g class="body-part" id="hair">
+                    <!-- Main hair -->
+                    <path d="
+                        M180 150
+                        C 175 120, 190 90, 220 75
+                        C 240 65, 260 65, 280 75
+                        C 310 90, 325 120, 320 150
+                        C 318 130, 315 110, 295 90
+                        C 275 75, 225 75, 205 90
+                        C 185 110, 182 130, 180 150
+                        Z"
+                        fill="#4a2700" stroke="#2a1600" stroke-width="1.5"/>
+                    
+                    <!-- Hair strands -->
+                    <path d="
+                        M200 95
+                        C 205 85, 210 80, 215 90
+                        M220 80
+                        C 225 70, 230 65, 235 75
+                        M250 75
+                        C 255 65, 260 60, 265 70
+                        M280 80
+                        C 285 70, 290 65, 295 75"
+                        stroke="#4a2700" stroke-width="2" stroke-linecap="round"/>
+                    
+                    <!-- Side hair -->
+                    <path d="
+                        M180 150
+                        C 175 160, 175 180, 178 200
+                        M320 150
+                        C 325 160, 325 180, 322 200"
+                        stroke="#4a2700" stroke-width="4" stroke-linecap="round"/>
+                    
+                    <!-- Bangs/fringe -->
+                    <path d="
+                        M210 90
+                        C 205 100, 200 110, 205 120
+                        M230 80
+                        C 225 95, 220 110, 225 115
+                        M250 75
+                        C 250 90, 250 105, 252 110
+                        M270 80
+                        C 275 95, 280 110, 275 115
+                        M290 90
+                        C 295 100, 300 110, 295 120"
+                        stroke="#4a2700" stroke-width="3" stroke-linecap="round"/>
+                </g>
+                <text x="250" y="100" class="label">pelo</text>
+
+                <!-- Neck -->
+                <path class="body-part" id="neck" d="
+                    M225 240
+                    C 225 250, 225 260, 225 270
+                    L 275 270
+                    C 275 260, 275 250, 275 240
+                    Z"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="250" y="255" class="label">cuello</text>
+
+                <!-- Realistic eyes -->
+                <g class="body-part" id="eyes">
+                    <!-- Left eye -->
+                    <path d="M215 140 C 220 130, 235 130, 240 140 C 235 150, 220 150, 215 140 Z" fill="white"/>
+                    <ellipse cx="227.5" cy="140" rx="7" ry="6" fill="#4b3619"/>
+                    <circle cx="230" cy="138" r="2" fill="white"/>
+                    <path d="M210 138 C 220 128, 235 128, 245 138" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+                    
+                    <!-- Right eye -->
+                    <path d="M260 140 C 265 130, 280 130, 285 140 C 280 150, 265 150, 260 140 Z" fill="white"/>
+                    <ellipse cx="272.5" cy="140" rx="7" ry="6" fill="#4b3619"/>
+                    <circle cx="275" cy="138" r="2" fill="white"/>
+                    <path d="M255 138 C 265 128, 280 128, 290 138" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+                    
+                    <!-- Eyebrows -->
+                    <path d="M210 130 C 220 125, 235 125, 245 130" fill="none" stroke="#3a290f" stroke-width="2"/>
+                    <path d="M255 130 C 265 125, 280 125, 290 130" fill="none" stroke="#3a290f" stroke-width="2"/>
+                </g>
+                <text x="250" y="140" class="label">ojos</text>
+
+                <!-- Realistic nose - more pronounced -->
+                <path class="body-part" id="nose" d="
+                    M250 155
+                    C 255 160, 260 165, 255 180
+                    C 253 185, 247 185, 245 180
+                    C 240 165, 245 160, 250 155
+                    Z"
+                    fill="#e5b299" stroke="#c4846c" stroke-width="2"/>
+                <text x="250" y="170" class="label">nariz</text>
+
+                <!-- Realistic mouth - highly pronounced with lips and teeth -->
+                <g class="body-part" id="mouth">
+                    <!-- Regular closed mouth (default state) -->
+                    <g class="mouth-closed">
+                        <!-- Lips outline and fill -->
+                        <path d="
+                            M225 195
+                            C 235 185, 265 185, 275 195
+                            C 270 208, 230 208, 225 195
+                            Z" 
+                            fill="#e05d5d" stroke="#a02c2c" stroke-width="1.5"/>
+                        
+                        <!-- Top lip detail -->
+                        <path d="
+                            M225 195
+                            C 240 190, 260 190, 275 195"
+                            fill="none" stroke="#a02c2c" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Bottom lip detail -->
+                        <path d="
+                            M230 200
+                            C 240 205, 260 205, 270 200"
+                            fill="none" stroke="#c64545" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Slight smile curve -->
+                        <path d="
+                            M230 197
+                            C 240 200, 260 200, 270 197"
+                            fill="none" stroke="#550000" stroke-width="0.5" stroke-linecap="round"/>
+                    </g>
+                    
+                    <!-- Open mouth (shown when talking) -->
+                    <g class="mouth-open">
+                        <!-- Lips outline and fill for open mouth -->
+                        <path d="
+                            M225 195
+                            C 235 185, 265 185, 275 195
+                            C 270 215, 230 215, 225 195
+                            Z" 
+                            fill="#9e2c2c" stroke="#a02c2c" stroke-width="1.5"/>
+                        
+                        <!-- Top lip detail -->
+                        <path d="
+                            M225 195
+                            C 240 190, 260 190, 275 195"
+                            fill="none" stroke="#a02c2c" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Tongue visible in open mouth -->
+                        <path d="
+                            M240 205
+                            C 250 210, 260 210, 270 205
+                            C 260 215, 250 215, 240 205
+                            Z"
+                            fill="#d44" stroke="#b33" stroke-width="0.5"/>
+                    </g>
+                </g>
+                <text x="250" y="205" class="label">boca</text>
+
+                <!-- Ears -->
+                <path class="body-part" id="ears" d="
+                    M180 150 C 170 140, 165 160, 175 180
+                    M320 150 C 330 140, 335 160, 325 180"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="170" y="160" class="label">oreja</text>
+                <text x="330" y="160" class="label">oreja</text>
+
+                <!-- Torso with muscle definition -->
+                <g>
+                    <!-- New torso structure - replaces both old torso and chest -->
+                    <path class="body-part" id="estomago" d="
+                        M200 270 
+                        C 190 300, 180 350, 180 400
+                        C 180 450, 200 500, 250 500
+                        C 300 500, 320 450, 320 400
+                        C 320 350, 310 300, 300 270
+                        L 200 270" 
+                        fill="url(#torsoGradient)" filter="url(#softShadow)"/>
+                    <text x="250" y="450" class="label">estómago</text>
+                    
+                    <!-- Chest - front upper torso -->
+                    <path class="body-part" id="pecho" d="
+                        M200 270
+                        C 210 290, 240 310, 250 310
+                        C 260 310, 290 290, 300 270
+                        C 295 290, 275 320, 250 325
+                        C 225 320, 205 290, 200 270
+                        Z"
+                        fill="#d5ad89" filter="url(#softShadow)"/>
+                    <text x="250" y="300" class="label">pecho</text>
+                    
+                    <!-- Back - represented visually, but only visible when rotated -->
+                    <path class="body-part back-only" id="espalda" d="
+                        M200 330
+                        C 205 350, 225 370, 250 375
+                        C 275 370, 295 350, 300 330
+                        C 295 360, 275 390, 250 395
+                        C 225 390, 205 360, 200 330
+                        Z"
+                        fill="#c99c76" filter="url(#softShadow)"/>
+                    <text x="250" y="365" class="label back-only">espalda</text>
+                    
+                    <!-- Muscle definition for torso -->
+                    <path d="
+                        M220 290 C 230 320, 240 350, 250 380
+                        M280 290 C 270 320, 260 350, 250 380
+                        M250 380 L 250 470
+                        M200 420 C 220 430, 280 430, 300 420
+                        M210 350 C 230 360, 270 360, 290 350
+                        M215 310 C 230 315, 270 315, 285 310"
+                        fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+                </g>
+
+                <!-- Shoulders -->
+                <path class="body-part" id="shoulders" d="
+                    M200 270 C 180 280, 170 290, 160 300
+                    M300 270 C 320 280, 330 290, 340 300"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="160" y="285" class="label">hombro</text>
+                <text x="340" y="285" class="label">hombro</text>
+
+                <!-- Arms with muscle definition -->
+                <path class="body-part" id="left-arm" d="
+                    M180 290 C 150 310, 130 350, 115 400
+                    C 110 425, 120 435, 135 415
+                    C 145 400, 155 380, 165 360"
+                    fill="url(#leftArmGradient)" filter="url(#softShadow)"/>
+                <text x="150" y="355" class="label">brazo izquierdo</text>
+                
+                <path class="body-part" id="right-arm" d="
+                    M320 290 C 350 310, 370 350, 385 400
+                    C 390 425, 380 435, 365 415
+                    C 355 400, 345 380, 335 360"
+                    fill="url(#rightArmGradient)" filter="url(#softShadow)"/>
+                <text x="350" y="355" class="label">brazo derecho</text>
+
+                <!-- Muscle definition for arms -->
+                <path d="
+                    M165 310 C 155 330, 145 350, 135 370
+                    M335 310 C 345 330, 355 350, 365 370"
+                    fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+
+                <!-- Hands -->
+                <path class="body-part" id="left-hand" d="
+                    M115 400 C 105 420, 100 430, 105 440
+                    C 110 450, 120 445, 130 435
+                    C 135 430, 140 420, 135 410"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="120" y="425" class="label">mano izquierda</text>
+                
+                <path class="body-part" id="right-hand" d="
+                    M385 400 C 395 420, 400 430, 395 440
+                    C 390 450, 380 445, 370 435
+                    C 365 430, 360 420, 365 410"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="380" y="425" class="label">mano derecha</text>
+
+                <!-- Legs with muscle definition -->
+                <path class="body-part" id="left-leg" d="
+                    M220 500 C 210 550, 200 600, 200 650
+                    C 195 670, 215 670, 220 650 L 240 500"
+                    fill="url(#leftLegGradient)" filter="url(#softShadow)"/>
+                <text x="220" y="575" class="label">pierna izquierda</text>
+                
+                <path class="body-part" id="right-leg" d="
+                    M260 500 C 270 550, 280 600, 280 650
+                    C 285 670, 265 670, 260 650 L 240 500"
+                    fill="url(#rightLegGradient)" filter="url(#softShadow)"/>
+                <text x="270" y="575" class="label">pierna derecha</text>
+
+                <!-- Muscle definition for legs -->
+                <path d="
+                    M215 525 C 210 565, 205 605, 205 645
+                    M265 525 C 270 565, 275 605, 275 645
+                    M225 550 C 230 560, 235 560, 240 550
+                    M255 550 C 250 560, 245 560, 240 550"
+                    fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+
+                <!-- Knee details -->
+                <ellipse class="body-part" id="left-knee" cx="207" cy="575" rx="10" ry="8" fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="207" y="575" class="label">rodilla</text>
+                
+                <ellipse class="body-part" id="right-knee" cx="273" cy="575" rx="10" ry="8" fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="273" y="575" class="label">rodilla</text>
+
+                <!-- Feet with detail -->
+                <path class="body-part" id="left-foot" d="
+                    M195 650 C 190 660, 185 670, 195 675
+                    C 205 680, 225 680, 225 670
+                    C 225 665, 220 655, 215 650"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="200" y="670" class="label">pie izquierdo</text>
+                
+                <path class="body-part" id="right-foot" d="
+                    M285 650 C 290 660, 295 670, 285 675
+                    C 275 680, 255 680, 255 670
+                    C 255 665, 260 655, 265 650"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="280" y="670" class="label">pie derecho</text>
+
+                <!-- Add shadows for depth -->
+                <path d="M200 270 L 300 270 L 250 500 Z" fill="url(#shadowGradient)" opacity="0.2"/>
+
+                <!-- New back-only elements -->
+                <g class="back-only">
+                    <!-- Back of head (showing hair from behind) -->
+                    <path class="body-part" id="back-head" d="
+                        M180 150
+                        C 180 120, 200 90, 250 80
+                        C 300 90, 320 120, 320 150
+                        C 320 190, 300 230, 250 240
+                        C 200 230, 180 190, 180 150
+                        Z"
+                        fill="#4a2700" stroke="#2a1600" stroke-width="1.5"/>
+                    <text x="250" y="140" class="label">cabeza posterior</text>
+                    
+                    <!-- Nape of neck -->
+                    <path class="body-part" id="nuca" d="
+                        M225 240
+                        C 225 250, 225 260, 225 270
+                        L 275 270
+                        C 275 260, 275 250, 275 240
+                        Z"
+                        fill="#d5ad89" filter="url(#softShadow)"/>
+                    <text x="250" y="255" class="label">nuca</text>
+                    
+                    <!-- Back muscles and spine -->
+                    <g class="body-part" id="espalda">
+                        <!-- Upper back -->
+                        <path d="
+                            M200 270
+                            C 210 290, 230 310, 250 310
+                            C 270 310, 290 290, 300 270
+                            L 300 380
+                            C 280 400, 220 400, 200 380
+                            Z"
+                            fill="#d5ad89" filter="url(#softShadow)"/>
+                            
+                        <!-- Spine -->
+                        <path d="
+                            M250 240
+                            L 250 450"
+                            stroke="#c99c76" stroke-width="4" stroke-linecap="round"/>
+                            
+                        <!-- Shoulder blades -->
+                        <path d="
+                            M220 300
+                            C 210 320, 215 340, 235 350
+                            M280 300
+                            C 290 320, 285 340, 265 350"
+                            stroke="#c99c76" stroke-width="2" fill="none"/>
+                            
+                        <!-- Lower back -->
+                        <path d="
+                            M200 380
+                            C 220 420, 280 420, 300 380
+                            L 300 450
+                            C 280 480, 220 480, 200 450
+                            Z"
+                            fill="#c0966e" filter="url(#softShadow)"/>
+                    </g>
+                    <text x="250" y="350" class="label">espalda</text>
+                    
+                    <!-- Back view of arms -->
+                    <path class="body-part" id="back-left-arm" d="
+                        M180 290 C 150 310, 130 350, 115 400
+                        C 110 425, 120 435, 135 415
+                        C 145 400, 155 380, 165 360"
+                        fill="#c0966e" filter="url(#softShadow)"/>
+                    <text x="150" y="355" class="label">brazo posterior</text>
+                    
+                    <path class="body-part" id="back-right-arm" d="
+                        M320 290 C 350 310, 370 350, 385 400
+                        C 390 425, 380 435, 365 415
+                        C 355 400, 345 380, 335 360"
+                        fill="#c0966e" filter="url(#softShadow)"/>
+                    <text x="350" y="355" class="label">brazo posterior</text>
+                </g>
+
+                <!-- Mark front-only elements -->
+                <g class="body-part front-only" id="eyes">
+                    <!-- Left eye -->
+                    <path d="M215 140 C 220 130, 235 130, 240 140 C 235 150, 220 150, 215 140 Z" fill="white"/>
+                    <ellipse cx="227.5" cy="140" rx="7" ry="6" fill="#4b3619"/>
+                    <circle cx="230" cy="138" r="2" fill="white"/>
+                    <path d="M210 138 C 220 128, 235 128, 245 138" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+                    
+                    <!-- Right eye -->
+                    <path d="M260 140 C 265 130, 280 130, 285 140 C 280 150, 265 150, 260 140 Z" fill="white"/>
+                    <ellipse cx="272.5" cy="140" rx="7" ry="6" fill="#4b3619"/>
+                    <circle cx="275" cy="138" r="2" fill="white"/>
+                    <path d="M255 138 C 265 128, 280 128, 290 138" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+                    
+                    <!-- Eyebrows -->
+                    <path d="M210 130 C 220 125, 235 125, 245 130" fill="none" stroke="#3a290f" stroke-width="2"/>
+                    <path d="M255 130 C 265 125, 280 125, 290 130" fill="none" stroke="#3a290f" stroke-width="2"/>
+                </g>
+
+                <path class="body-part front-only" id="nose" d="
+                    M250 155
+                    C 255 160, 260 165, 255 180
+                    C 253 185, 247 185, 245 180
+                    C 240 165, 245 160, 250 155
+                    Z"
+                    fill="#e5b299" stroke="#c4846c" stroke-width="2"/>
+                <text x="250" y="170" class="label">nariz</text>
+
+                <g class="body-part front-only" id="mouth">
+                    <!-- Regular closed mouth (default state) -->
+                    <g class="mouth-closed">
+                        <!-- Lips outline and fill -->
+                        <path d="
+                            M225 195
+                            C 235 185, 265 185, 275 195
+                            C 270 208, 230 208, 225 195
+                            Z" 
+                            fill="#e05d5d" stroke="#a02c2c" stroke-width="1.5"/>
+                        
+                        <!-- Top lip detail -->
+                        <path d="
+                            M225 195
+                            C 240 190, 260 190, 275 195"
+                            fill="none" stroke="#a02c2c" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Bottom lip detail -->
+                        <path d="
+                            M230 200
+                            C 240 205, 260 205, 270 200"
+                            fill="none" stroke="#c64545" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Slight smile curve -->
+                        <path d="
+                            M230 197
+                            C 240 200, 260 200, 270 197"
+                            fill="none" stroke="#550000" stroke-width="0.5" stroke-linecap="round"/>
+                    </g>
+                    
+                    <!-- Open mouth (shown when talking) -->
+                    <g class="mouth-open">
+                        <!-- Lips outline and fill for open mouth -->
+                        <path d="
+                            M225 195
+                            C 235 185, 265 185, 275 195
+                            C 270 215, 230 215, 225 195
+                            Z" 
+                            fill="#9e2c2c" stroke="#a02c2c" stroke-width="1.5"/>
+                        
+                        <!-- Top lip detail -->
+                        <path d="
+                            M225 195
+                            C 240 190, 260 190, 275 195"
+                            fill="none" stroke="#a02c2c" stroke-width="1.5" stroke-linecap="round"/>
+                        
+                        <!-- Tongue visible in open mouth -->
+                        <path d="
+                            M240 205
+                            C 250 210, 260 210, 270 205
+                            C 260 215, 250 215, 240 205
+                            Z"
+                            fill="#d44" stroke="#b33" stroke-width="0.5"/>
+                    </g>
+                </g>
+                <text x="250" y="205" class="label">boca</text>
+
+                <path class="body-part front-only" id="pecho" d="
+                    M200 270
+                    C 210 290, 240 310, 250 310
+                    C 260 310, 290 290, 300 270
+                    C 295 290, 275 320, 250 325
+                    C 225 320, 205 290, 200 270
+                    Z"
+                    fill="#d5ad89" filter="url(#softShadow)"/>
+                <text x="250" y="300" class="label">pecho</text>
+            </svg>
+            <div id="speech-bubble" class="speech-bubble"></div>
+        </div>
+        <div id="welcome-message">¡Haz clic en las partes del cuerpo!</div>
+    </div>
+
+    <!-- Debug button for testing word bank visibility -->
+    <button id="debug-button" style="position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: red; color: white; padding: 5px; border: none; cursor: pointer;">
+        Show Word Bank
+    </button>
+
+    <!-- Word Bank button -->
+    <button id="word-bank-button" style="position: fixed; top: 10px; left: 10px; z-index: 9999; background-color: #3498db; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        📚 Word Bank
+    </button>
+
+    <script>
+        // bodyParts is now defined in the head section
+        // Game state variables are now defined in the head section
+        // window.isGameMode = false;
+        // window.correctlyPlacedWords = new Set();
+
+        // Body part positions for speech bubble placement
+        const bodyPartPositions = {
+            hair: { x: 250, y: 100, side: 'right' },
+            head: { x: 250, y: 160, side: 'right' },
+            neck: { x: 250, y: 255, side: 'right' },
+            eyes: { x: 250, y: 140, side: 'right' },
+            nose: { x: 250, y: 170, side: 'right' },
+            mouth: { x: 250, y: 205, side: 'right' },
+            ears: { x: 170, y: 160, side: 'left' },
+            shoulders: { x: 160, y: 285, side: 'left' },
+            pecho: { x: 250, y: 300, side: 'right' },
+            espalda: { x: 250, y: 365, side: 'right' },
+            estomago: { x: 250, y: 450, side: 'right' },
+            'left-arm': { x: 150, y: 355, side: 'left' },
+            'right-arm': { x: 350, y: 355, side: 'right' },
+            'left-hand': { x: 120, y: 425, side: 'left' },
+            'right-hand': { x: 380, y: 425, side: 'right' },
+            'left-leg': { x: 220, y: 575, side: 'left' },
+            'right-leg': { x: 270, y: 575, side: 'right' },
+            'left-knee': { x: 207, y: 575, side: 'left' },
+            'right-knee': { x: 273, y: 575, side: 'right' },
+            'left-foot': { x: 200, y: 670, side: 'left' },
+            'right-foot': { x: 280, y: 670, side: 'right' },
+            'back-head': { x: 250, y: 140, side: 'right' },
+            nuca: { x: 250, y: 255, side: 'right' },
+            'back-left-arm': { x: 150, y: 355, side: 'left' },
+            'back-right-arm': { x: 350, y: 355, side: 'right' }
+        };
+
+        // Phrases with Mexican Spanish accent
+        const mexicanPhrases = [];
+
+        async function speak(text, isBodyPart = true) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            try {
+                // Get voice and browser info
+                const { voice, isSafari, isChrome } = await getMexicanVoice();
+                
+                // Create the utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                if (voice) {
+                    utterance.voice = voice;
+                }
+                utterance.lang = 'es-MX';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                
+                // Log for debugging
+                console.log("Speaking:", text, "with voice:", voice ? voice.name : "default");
+                
+                // Speak
+                window.speechSynthesis.speak(utterance);
+            } catch (error) {
+                console.error("Error speaking:", error);
+            }
+            
+            // Override the window.speak function
+            window.speak = speak;
+        }
+
+        // Function to get a Mexican Spanish voice
+        async function getMexicanVoice() {
+            return new Promise((resolve) => {
+                let voices = window.speechSynthesis.getVoices();
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                const isChrome = /chrome/i.test(navigator.userAgent);
+                
+                if (voices.length === 0) {
+                    // Wait for voices to be loaded
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        voices = window.speechSynthesis.getVoices();
+                        processVoices();
+                    };
+                } else {
+                    processVoices();
+                }
+                
+                function processVoices() {
+                    // Try to find a Spanish (Mexico) voice
+                    let voice = voices.find(v => 
+                        v.lang === 'es-MX' || 
+                        v.lang === 'es-ES' ||
+                        v.lang === 'es_MX' || 
+                        v.lang === 'es_ES' ||
+                        v.lang.startsWith('es')
+                    );
+                    
+                    // If no specific Spanish voice, use any available voice
+                    if (!voice && voices.length > 0) {
+                        voice = voices[0];
+                    }
+                    
+                    // Log available voices for debugging
+                    console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`).join(", "));
+                    
+                    resolve({ voice, isSafari, isChrome });
+                }
+            });
+        }
+
+        function adjustToMexicanAccent(text, isSafari) {
+            // Add common Mexican Spanish pronunciation adjustments
+            // Safari needs different adjustments than other browsers
+            if (isSafari) {
+                return text; // Safari's speech synthesis handles Spanish well natively
+            } else {
+                return text
+                    .replace(/s\b/g, 'j') // Final 's' sometimes sounds like 'j' in some regions
+                    .replace(/d\b/g, 'dh'); // Final 'd' is softened
+            }
+        }
+
+        // Get speech bubble elements
+        const speechBubble = document.getElementById('speech-bubble');
+        const welcomeMessage = document.getElementById('welcome-message');
+        
+        // Initialize starred words set
+        window.starredWords = new Set();
+        
+        // Function to update word bank with starred words
+        function updateWordBank() {
+            const wordLibrary = document.getElementById('word-library');
+            
+            // Clear the word library
+            wordLibrary.innerHTML = '';
+            
+            // If no starred words, show a message
+            if (window.starredWords.size === 0) {
+                const messageDiv = document.createElement('div');
+                messageDiv.style.color = 'white';
+                messageDiv.style.padding = '10px';
+                messageDiv.style.textAlign = 'center';
+                messageDiv.textContent = 'No starred words yet. Click on body parts and star them to add to your word bank.';
+                wordLibrary.appendChild(messageDiv);
+                return;
+            }
+            
+            // Add each starred word to the word bank
+            window.starredWords.forEach(partId => {
+                if (window.bodyParts[partId]) {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.textContent = window.bodyParts[partId];
+                    
+                    // Add remove button
+                    const removeButton = document.createElement('button');
+                    removeButton.innerHTML = '&times;';
+                    removeButton.style.marginLeft = '5px';
+                    removeButton.style.background = 'transparent';
+                    removeButton.style.border = 'none';
+                    removeButton.style.color = '#ff5555';
+                    removeButton.style.fontSize = '16px';
+                    removeButton.style.cursor = 'pointer';
+                    
+                    // Add click event to remove from starred words
+                    removeButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        window.starredWords.delete(partId);
+                        updateWordBank();
+                    });
+                    
+                    // Create a container for the word and remove button
+                    const container = document.createElement('div');
+                    container.style.display = 'flex';
+                    container.style.justifyContent = 'space-between';
+                    container.style.alignItems = 'center';
+                    container.style.width = '100%';
+                    
+                    container.appendChild(document.createTextNode(window.bodyParts[partId]));
+                    container.appendChild(removeButton);
+                    
+                    wordItem.innerHTML = '';
+                    wordItem.appendChild(container);
+                    
+                    wordLibrary.appendChild(wordItem);
+                }
+            });
+        }
+        
+        // Hide welcome message after 5 seconds
+        setTimeout(() => {
+            welcomeMessage.style.display = 'none';
+        }, 5000);
+
+        function positionSpeechBubble(partId) {
+            const position = bodyPartPositions[partId];
+            if (!position) return;
+            
+            // Get SVG container dimensions
+            const svgContainer = document.querySelector('.svg-container');
+            const svgElement = svgContainer.querySelector('svg');
+            const svgRect = svgElement.getBoundingClientRect();
+            
+            // Calculate scaled coordinates
+            const scaleX = svgRect.width / 500;  // 500 is SVG viewBox width
+            const scaleY = svgRect.height / 700; // 700 is SVG viewBox height
+            
+            // Calculate position
+            const bubbleX = position.x * scaleX;
+            const bubbleY = position.y * scaleY;
+            
+            // Apply offsets based on side
+            const xOffset = position.side === 'right' ? 40 : -240;
+            const yOffset = -40;
+            
+            // Position the bubble
+            speechBubble.style.left = `${bubbleX + xOffset}px`;
+            speechBubble.style.top = `${bubbleY + yOffset}px`;
+            
+            // Set direction
+            speechBubble.className = 'speech-bubble';
+            if (position.side === 'right') {
+                speechBubble.classList.add('right');
+            }
+        }
+
+        // Function to enable game mode
+        window.enableGameMode = function() {
+            window.isGameMode = true;
+            window.correctlyPlacedWords.clear();
+            
+            // Hide speech bubble
+            document.getElementById('speech-bubble').style.display = 'none';
+            
+            // Update button text
+            document.getElementById('game-mode-button').textContent = 'Salir Juego';
+            
+            // Hide welcome message if still visible
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+                welcomeMessage.style.display = 'none';
+            }
+            
+            // Clear word library and prepare it for game mode
+            const wordLibrary = document.getElementById('word-library');
+            wordLibrary.innerHTML = '';
+            
+            // Add "Game Mode" label to word library
+            const gameLabel = document.createElement('div');
+            gameLabel.textContent = "Modo Juego - Drag Words";
+            gameLabel.style.color = 'white';
+            gameLabel.style.fontWeight = 'bold';
+            gameLabel.style.padding = '10px 5px';
+            gameLabel.style.textAlign = 'center';
+            gameLabel.style.borderBottom = '1px solid rgba(255, 255, 255, 0.3)';
+            gameLabel.style.marginBottom = '10px';
+            wordLibrary.appendChild(gameLabel);
+            
+            // Add body part words to the library
+            const bodyPartsList = Object.entries(window.bodyParts);
+            
+            // Shuffle the array for random order
+            const shuffledBodyParts = [...bodyPartsList].sort(() => Math.random() - 0.5);
+            
+            // Limit to only 5 random body parts
+            const selectedBodyParts = shuffledBodyParts.slice(0, 5);
+            
+            // Store the selected part IDs for validation
+            window.gameSelectedPartIds = new Set(selectedBodyParts.map(([id]) => id));
+            
+            // Make sure word library is visible and positioned correctly for game mode
+            wordLibrary.style.display = 'flex';
+            wordLibrary.style.opacity = '1';
+            wordLibrary.style.visibility = 'visible';
+            wordLibrary.style.right = '20px';
+            wordLibrary.style.left = 'auto';
+            wordLibrary.style.transform = 'translateY(-50%)';
+            
+            // Add words in batches for smoother rendering
+            const addWordsInBatches = (parts, batchSize = 5, delay = 50) => {
+                if (parts.length === 0) return;
+                
+                const batch = parts.slice(0, batchSize);
+                const remaining = parts.slice(batchSize);
+                
+                batch.forEach(([partId, spanishWord]) => {
+                    // Create word item
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.textContent = spanishWord;
+                    wordItem.dataset.partId = partId;
+                    wordItem.draggable = true;
+                    
+                    // Add drag events
+                    wordItem.addEventListener('dragstart', function(e) {
+                        e.dataTransfer.setData('text/plain', partId);
+                        this.classList.add('dragging');
+                    });
+                    
+                    wordItem.addEventListener('dragend', function() {
+                        this.classList.remove('dragging');
+                    });
+                    
+                    // Add to library
+                    wordLibrary.appendChild(wordItem);
+                });
+                
+                if (remaining.length > 0) {
+                    setTimeout(() => addWordsInBatches(remaining, batchSize, delay), delay);
+                }
+            };
+            
+            addWordsInBatches(selectedBodyParts);
+            
+            // Add drag-and-drop event listeners to body parts
+            const bodyParts = document.querySelectorAll('svg [id]');
+            bodyParts.forEach(bodyPart => {
+                const partId = bodyPart.id;
+                
+                bodyPart.addEventListener('dragover', function(e) {
+                    // Check if this part has a valid word in the game and hasn't been placed yet
+                    const isInGame = selectedBodyParts.some(([id]) => id === partId);
+                    
+                    if (isInGame && !window.correctlyPlacedWords.has(partId)) {
+                        e.preventDefault();
+                        bodyPart.classList.add('drop-target');
+                    }
+                });
+                
+                bodyPart.addEventListener('dragleave', function() {
+                    bodyPart.classList.remove('drop-target');
+                });
+                
+                bodyPart.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    bodyPart.classList.remove('drop-target');
+                    
+                    // Get the dragged part id
+                    const draggedPartId = e.dataTransfer.getData('text/plain');
+                    const targetPartId = partId;
+                    
+                    // Find the wordItem being dragged
+                    const wordElement = document.querySelector(`.word-item[data-part-id="${draggedPartId}"]`);
+                    
+                    if (draggedPartId === targetPartId) {
+                        // Success - place the word and mark as correct
+                        handleCorrectPlacement(wordElement, bodyPart);
+                        
+                        // Play success sound
+                        speak(window.bodyParts[targetPartId], true);
+                    } else {
+                        // Failure - return to library
+                        handleIncorrectPlacement();
+                    }
+                });
+            });
+            
+            // Add game-mode class to container and body
+            const svgContainer = document.querySelector('.svg-container');
+            svgContainer.classList.add('game-mode');
+            document.body.classList.add('game-mode-active');
+            
+            // Ensure word library is visible by adding show class
+            wordLibrary.classList.add('show');
+            
+            // Hide the regular word bank button during game mode
+            const wordBankButton = document.getElementById('word-bank-button');
+            if (wordBankButton) {
+                wordBankButton.style.display = 'none';
+            }
+            
+            console.log("Game mode enabled");
+        }
+        
+        // Function to exit game mode
+        window.exitGameMode = function() {
+            window.isGameMode = false;
+            
+            // Hide word library
+            const wordLibrary = document.getElementById('word-library');
+            wordLibrary.innerHTML = '';
+            wordLibrary.classList.remove('show');
+            wordLibrary.style.display = 'none';
+            
+            // Remove game mode classes
+            document.querySelector('.svg-container').classList.remove('game-mode');
+            document.body.classList.remove('game-mode-active');
+            
+            // Show speech bubble again
+            document.getElementById('speech-bubble').style.display = 'block';
+            
+            // Remove all placed words with animation
+            const placedWords = document.querySelectorAll('.placed-word');
+            placedWords.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'scale(0.8)';
+                setTimeout(() => el.remove(), 300);
+            });
+            
+            // Show the word bank button again
+            const wordBankButton = document.getElementById('word-bank-button');
+            if (wordBankButton) {
+                wordBankButton.style.display = 'block';
+                wordBankButton.textContent = '📚 Word Bank';
+            }
+        }
+
+        // Change the window.onload function to include voice initialization
+        window.onload = function() {
+            // Initialize speech synthesis
+            window.initSpeech();
+            
+            // Set up click events for body parts
+            const bodyParts = document.querySelectorAll('.body-part');
+            bodyParts.forEach(part => {
+                part.addEventListener('click', function() {
+                    if (window.isGameMode) return; // Don't activate in game mode
+                    
+                    const partId = this.id;
+                    if (window.bodyParts[partId]) {
+                        // Position speech bubble
+                        positionSpeechBubble(partId);
+                        
+                        // Set speech bubble content
+                        const speechBubble = document.getElementById('speech-bubble');
+                        
+                        // Clear previous content
+                        speechBubble.innerHTML = '';
+                        
+                        // Add the Spanish word as text
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = window.bodyParts[partId];
+                        speechBubble.appendChild(wordSpan);
+                        
+                        // Add star button
+                        const starButton = document.createElement('button');
+                        starButton.className = 'star-button';
+                        starButton.textContent = '★';
+                        
+                        // Check if this word is already starred
+                        if (window.starredWords.has(partId)) {
+                            starButton.classList.add('starred');
+                        }
+                        
+                        // Add click event for starring/unstarring
+                        starButton.addEventListener('click', function(e) {
+                            e.stopPropagation(); // Prevent body part click event from firing again
+                            
+                            if (window.starredWords.has(partId)) {
+                                // Unstar word
+                                window.starredWords.delete(partId);
+                                starButton.classList.remove('starred');
+                            } else {
+                                // Star word
+                                window.starredWords.add(partId);
+                                starButton.classList.add('starred');
+                                
+                                // Update word bank if it's visible
+                                updateWordBank();
+                            }
+                        });
+                        
+                        speechBubble.appendChild(starButton);
+                        speechBubble.classList.add('show');
+                        
+                        // Speak the body part name
+                        speak(window.bodyParts[partId]);
+                        
+                        // Don't automatically hide speech bubble, let user close it by clicking elsewhere
+                        document.addEventListener('click', function closeOnClickOutside(e) {
+                            if (!speechBubble.contains(e.target) && e.target !== part) {
+                                speechBubble.classList.remove('show');
+                                document.removeEventListener('click', closeOnClickOutside);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Set up rotation button
+            const rotateButton = document.getElementById('rotate-button');
+            const characterContainer = document.getElementById('character-container');
+            const viewIndicator = document.getElementById('view-indicator');
+            let isBackView = false;
+            
+            rotateButton.addEventListener('click', function() {
+                isBackView = !isBackView;
+                
+                if (isBackView) {
+                    characterContainer.classList.remove('viewing-front');
+                    characterContainer.classList.add('viewing-back', 'rotated');
+                    rotateButton.textContent = "Frente";
+                    
+                    // Add class to body for global styling when in back view
+                    document.body.classList.add('back-view');
+                } else {
+                    characterContainer.classList.remove('viewing-back', 'rotated');
+                    characterContainer.classList.add('viewing-front');
+                    rotateButton.textContent = "Girar";
+                    
+                    // Remove class from body
+                    document.body.classList.remove('back-view');
+                }
+            });
+            
+            // Set up game mode button
+            const gameModeButton = document.getElementById('game-mode-button');
+            gameModeButton.addEventListener('click', function() {
+                if (window.isGameMode) {
+                    window.exitGameMode();
+                    gameModeButton.textContent = "Modo Juego";
+                } else {
+                    window.enableGameMode();
+                    gameModeButton.textContent = "Salir Juego";
+                }
+            });
+            
+            // Initialize music button
+            setupMusicButton();
+            
+            // Make sure word library is properly initialized
+            const wordLibrary = document.getElementById('word-library');
+            if (!wordLibrary) {
+                console.error("Word library element not found!");
+            } else {
+                // Ensure it's properly positioned but hidden initially
+                wordLibrary.style.display = 'none';
+                wordLibrary.style.opacity = '0';
+                wordLibrary.style.visibility = 'hidden';
+                console.log("Word library initialized");
+            }
+            
+            // Update bodyParts with back view translations
+            
+            setTimeout(() => {
+                wordLibrary.innerHTML = '';
+                wordLibrary.classList.remove('show');
+            }, 300);
+            
+            document.querySelector('.svg-container').classList.remove('game-mode');
+            document.body.classList.remove('game-mode-active');
+            
+            // Show speech bubble again
+            document.getElementById('speech-bubble').style.display = 'block';
+            
+            // Remove all placed words with animation
+            const placedWords = document.querySelectorAll('.positioned-word');
+            placedWords.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'scale(0.8)';
+                setTimeout(() => el.remove(), 300);
+            });
+            
+            // Update button text
+            document.getElementById('game-mode-button').textContent = 'Modo Juego';
+            
+            // Log to console for debugging
+            console.log("Game mode disabled, word library should be hidden");
+        }
+
+        // Add event listener for debug button
+        document.getElementById('debug-button').addEventListener('click', function() {
+            const wordLibrary = document.getElementById('word-library');
+            
+            // Toggle word library visibility
+            if (wordLibrary.style.display === 'flex') {
+                wordLibrary.style.display = 'none';
+                wordLibrary.style.opacity = '0';
+                wordLibrary.style.visibility = 'hidden';
+                this.textContent = 'Show Word Bank';
+            } else {
+                wordLibrary.style.display = 'flex';
+                wordLibrary.style.opacity = '1';
+                wordLibrary.style.visibility = 'visible';
+                wordLibrary.style.left = '20px';
+                wordLibrary.style.transform = 'translateY(-50%)';
+                wordLibrary.style.zIndex = '9999';
+                wordLibrary.classList.add('show');
+                this.textContent = 'Hide Word Bank';
+                
+                // Log word library state
+                console.log("Word library state:", {
+                    display: wordLibrary.style.display,
+                    opacity: wordLibrary.style.opacity,
+                    visibility: wordLibrary.style.visibility,
+                    left: wordLibrary.style.left,
+                    transform: wordLibrary.style.transform,
+                    zIndex: wordLibrary.style.zIndex,
+                    hasShowClass: wordLibrary.classList.contains('show')
+                });
+            }
+        });
+
+        // Add event listener for word bank button
+        document.getElementById('word-bank-button').addEventListener('click', function() {
+            const wordLibrary = document.getElementById('word-library');
+            
+            // Toggle word library visibility
+            if (wordLibrary.style.display === 'flex') {
+                wordLibrary.style.display = 'none';
+                wordLibrary.style.opacity = '0';
+                wordLibrary.style.visibility = 'hidden';
+                this.textContent = '📚 Word Bank';
+            } else {
+                // Update the word bank with starred words before showing
+                updateWordBank();
+                
+                wordLibrary.style.display = 'flex';
+                wordLibrary.style.opacity = '1';
+                wordLibrary.style.visibility = 'visible';
+                wordLibrary.style.right = '20px';
+                wordLibrary.style.left = 'auto';
+                wordLibrary.style.transform = 'translateY(-50%)';
+                wordLibrary.style.zIndex = '9999';
+                wordLibrary.classList.add('show');
+                this.textContent = '❌ Close Word Bank';
+            }
+        });
+        
+        // Remove old debug button if it exists
+        const oldDebugButton = document.getElementById('debug-button');
+        if (oldDebugButton) {
+            oldDebugButton.remove();
+        }
+
+        // Function to setup music button
+        function setupMusicButton() {
+            const musicButton = document.getElementById('music-button');
+            if (!musicButton) return;
+
+            let isPlaying = false;
+            let audio = null;
+
+            musicButton.addEventListener('click', function() {
+                if (isPlaying && audio) {
+                    audio.pause();
+                    audio = null;
+                    isPlaying = false;
+                    musicButton.textContent = "🎵 Mariachi";
+                } else {
+                    audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+                    audio.loop = true;
+                    audio.play();
+                    isPlaying = true;
+                    musicButton.textContent = "🔇 Silencio";
+                }
+            });
+        }
+
+        // Function to handle correct word placement
+        function handleCorrectPlacement(wordElement, bodyPart) {
+            if (!wordElement || !bodyPart) return;
+            
+            const partId = bodyPart.id;
+            const spanishWord = window.bodyParts[partId];
+            
+            // Mark as correctly placed
+            window.correctlyPlacedWords.add(partId);
+            
+            // Style the word in the library
+            wordElement.classList.add('correct');
+            
+            // Create positioned word label
+            const bodyRect = bodyPart.getBoundingClientRect();
+            const containerRect = document.querySelector('.svg-container').getBoundingClientRect();
+            
+            const wordLabel = document.createElement('div');
+            wordLabel.className = 'placed-word correct';
+            wordLabel.textContent = spanishWord;
+            
+            // Position relative to the container
+            wordLabel.style.left = (bodyRect.left - containerRect.left + bodyRect.width/2) + 'px';
+            wordLabel.style.top = (bodyRect.top - containerRect.top + bodyRect.height/2) + 'px';
+            wordLabel.style.transform = 'translate(-50%, -50%)';
+            
+            document.querySelector('.svg-container').appendChild(wordLabel);
+            
+            // Show with animation
+            setTimeout(() => wordLabel.classList.add('visible'), 50);
+            
+            // Check if all selected words are placed correctly
+            if (window.correctlyPlacedWords.size === window.gameSelectedPartIds.size) {
+                setTimeout(handleGameCompletion, 1000);
+            }
+        }
+        
+        // Function to handle incorrect word placement
+        function handleIncorrectPlacement() {
+            // Play error sound or feedback
+            const errorSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PztmMcBjiR1fb' +
+                                         'HeS0IG3Cy69ujQBELSarg+8BsJAVBitRczLtMJ1PBMAYJBAM3ZpuaUCorQ4SMjFciEAZTlrOWTiMTHFmrwLFqLCUyWrfVu3MgCAo3aIS4zPHUp4NtWkMrHSA3VHeXr9L385RbKiJLksDSsGwofD6LxOLZ' +
+                                         'mFFFNRlQh6575/z8w42CZDQiR1WDo8Tv/easXDYxW5e45+nWhEAdKj5qosnj+uKaVSwfPF2m1tz1qFovFy5Xkcjp9dSOVDYgK1uVwef15Y5SMiA8bqLM3vi6e1gzKkRqi77a7t2hXjEcMVyRyeLz7K5f' +
+                                         'NBw+Y4+43OXnp2Q/Jj5Wk8fm8uOiXDglMleOyOL19LRmSCZEXHij0Nbrvn5OITFTjMnj9em3ZkIgPWOcyODu5qpiOyFBZI294O/jrWZPLz1dlcfm9+y6az4kPV+WzOT489uZTzEzTZDH3O/sx3NKKj1Z' +
+                                         'jr/O2NzPomxCM0V5oNHf7N2qaUIqQ26byd3t5q5oQCVIaJbD2urksGlAKEFqmcnY6OKwakEpRm2XxtTm47BhPSxLabPn/v7coFAmKFPYBCFXlbXa4OW6gGE9M0yIu+P3/dCUWiwoQ4i01t/z56RdNSpK' +
+                                         'fLfq/fekYzksPlCBvOT5/82MXDUsP2uUzODu35ZQMShTfLPm+PfRmWAzLDpXir7k9/7WjlUuJkuEs+b1/dKKWjcnRWiRxd3s56hpRCdEZozB1+nt' +
+                                         'umk9JjlkmM3g7OembkUjN12XzePx7q1nSyo8W4nC1untt3JLKDFQgbff7++OXDmRWUNKEBgnO1yIo77W7r2cdVlSTR8LChYqSGmStdTl2rmYflxPKwgMHDlYi6DB1unjvJ+BWkklExs1Y5itydnm4r+i' +
+                                         'iWdMJBEaL1+WrsfY5+K+qJJmRCYUGjFdkajG2OfevaWRakspGB0xXI+lxdnn3r2jkGpNKxkdMFuPoMHZ6OK/p45lTiYVHC9Yh6TCzeTo4L2bhmBLIBYeL1uRrcvd6OG6n4plTCYWGi1bj6bD1OnnvqKO' +
+                                         'aU0qGR0uWo+nwtPp5r2jj2hNKhkcLlqOp8LT6ea9o49oTSoZHC5ajqfC0+nmvaOPaE0qGRwuWo6nwtPp5r2jj2hNKhkcLlqOqMLT6ea9o49oTSoZHC5ajqfC0+nmvaOPaE0qGhwuWo6n');
+            
+            errorSound.play();
+        }
+        
+        // Function to handle game completion
+        function handleGameCompletion() {
+            // Display success message
+            const successMessage = document.createElement('div');
+            successMessage.style.position = 'absolute';
+            successMessage.style.top = '50%';
+            successMessage.style.left = '50%';
+            successMessage.style.transform = 'translate(-50%, -50%)';
+            successMessage.style.background = 'rgba(0, 0, 0, 0.8)';
+            successMessage.style.color = 'white';
+            successMessage.style.padding = '20px';
+            successMessage.style.borderRadius = '10px';
+            successMessage.style.fontSize = '24px';
+            successMessage.style.textAlign = 'center';
+            successMessage.style.zIndex = '1000';
+            successMessage.innerHTML = '¡Felicidades! <br>¡Has completado el juego!';
+            
+            document.querySelector('.svg-container').appendChild(successMessage);
+            
+            // Remove after a few seconds
+            setTimeout(() => {
+                successMessage.style.opacity = '0';
+                successMessage.style.transition = 'opacity 1s';
+                setTimeout(() => successMessage.remove(), 1000);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
